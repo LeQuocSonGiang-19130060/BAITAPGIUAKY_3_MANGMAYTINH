@@ -15,7 +15,6 @@ import server.Product;
 
 public class Client {
 
-	
 	BufferedReader netIn;
 	PrintWriter netOut;
 	ObjectInputStream ois;
@@ -48,9 +47,22 @@ public class Client {
 					send(command, param);
 					receiveList();
 					break;
-//				case "DELETEBYID":
-//					send(command, param);
-//					break;
+				case "DELETEBYID":
+					send(command, param);
+					receiveDel();
+					break;
+				case "SAVEPRODUCT":
+					send(command, param, param2, doubleValue);
+					receiveIns();
+					break;
+				case "EDITPRICE":
+					send(command, param, doubleValue);
+					receiveUpdate();
+					break;
+				case "EDITNAME":
+					send(command, param, param2);
+					receiveUpdate();
+					break;
 				}
 
 			} catch (MyException e) {
@@ -61,12 +73,34 @@ public class Client {
 	}
 
 	public void send(String command, String param) throws IOException {
-	//	netOut.println();
+		netOut.println("aa");
 		netOut.println(command);
 		netOut.println(param);
 	}
 
-	String command, param;
+	public void send(String command, String id, String name, double price) {
+		netOut.println("aa");
+		netOut.println(command);
+		netOut.println(id);
+		netOut.println(name);
+		netOut.println(price);
+	}
+
+	public void send(String cmd, String id, double price) {
+		netOut.println("aa");
+		netOut.println(cmd);
+		netOut.println(id);
+		netOut.println(price);
+	}
+
+	public void send(String cmd, String id, String name) {
+		netOut.println("aa");
+		netOut.println(cmd);
+		netOut.println(id);
+		netOut.println(name);
+	}
+
+	String command, param, param2;
 	double doubleValue;
 
 	public void requestAnal(String line) throws MyException {
@@ -77,7 +111,7 @@ public class Client {
 			switch (command) {
 			case "FINDBYNAME":
 				break;
-			case "FINDBYID":
+			case "FINDBYID", "DELETEBYID":
 				break;
 			case "FINDBYPRICE":
 				try {
@@ -86,6 +120,24 @@ public class Client {
 				} catch (NumberFormatException e) {
 					throw new MyException("Tham số giá tiền không hợp lệ");
 				}
+			case "SAVEPRODUCT":
+				try {
+					param2 = stk.nextToken();
+					doubleValue = Double.parseDouble(stk.nextToken());
+					break;
+				} catch (NumberFormatException e) {
+					throw new MyException("Tham số không hợp lệ");
+				}
+			case "EDITPRICE":
+				try {
+					doubleValue = Double.parseDouble(stk.nextToken());
+					break;
+				} catch (NumberFormatException e) {
+					throw new MyException("Tham số không hợp lệ");
+				}
+			case "EDITNAME":
+				param2 = stk.nextToken();
+				break;
 			default:
 				throw new MyException("Lenh khong hop le");
 			}
@@ -96,21 +148,50 @@ public class Client {
 
 	public void receive() throws Exception {
 		Product result = (Product) ois.readObject();
-		System.out.println(result.toString());
+		if (result != null) {
+			System.out.println(result.toString());
+		} else {
+			System.out.println("Not FOUND!!!");
+		}
 	}
 
 	public void receiveList() throws Exception {
 		List<Product> listResult = (List<Product>) ois.readObject();
-		for (Product p : listResult)
-			System.out.println(p.toString());
+		if (listResult != null && listResult.size() > 0) {
+			for (Product p : listResult)
+				System.out.println(p.toString());
+		} else {
+			System.out.println("Not FOUND!!!");
+		}
 	}
 
 	public void receiveDel() throws IOException {
 		boolean result = ois.readBoolean();
+		System.out.println(result);
 		if (result) {
 			System.out.println("Delete successfull");
 		} else {
 			System.out.println("Error! Product is not exist!");
+		}
+	}
+
+	public void receiveIns() throws IOException {
+		boolean result = ois.readBoolean();
+		System.out.println(result);
+		if (result) {
+			System.out.println("Insert successfull");
+		} else {
+			System.out.println("Error! Insert is Failed!");
+		}
+	}
+
+	public void receiveUpdate() throws IOException {
+		boolean result = ois.readBoolean();
+		System.out.println(result);
+		if (result) {
+			System.out.println("Update successfull");
+		} else {
+			System.out.println("Error! Update is Failed!");
 		}
 	}
 

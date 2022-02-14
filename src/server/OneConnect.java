@@ -31,17 +31,20 @@ public class OneConnect extends Thread {
 
 		String lineCommand;
 		String lineParam;
+		String lineParam2;
+		String lineParam3;
 		DAO dao = new DAO();
 		try {
 			while (true) {
-				System.out.println("1:  "+ netIn.readLine());
+				netIn.readLine();
 				lineCommand = netIn.readLine();
-				System.out.println("hello"+lineCommand);
+				System.out.println("hello" + lineCommand);
 				if (lineCommand.equalsIgnoreCase("QUIT")) {
-					System.out.println("break");
-					break;}
+
+					break;
+				}
 				lineParam = netIn.readLine();
-				System.out.println("he"+lineParam);
+				System.out.println("he" + lineParam);
 				switch (lineCommand) {
 				case "FINDBYNAME":
 					ArrayList<Product> result = (ArrayList<Product>) dao.getByName(lineParam);
@@ -60,7 +63,28 @@ public class OneConnect extends Thread {
 					break;
 				case "DELETEBYID":
 					boolean success = dao.deleteProduct(lineParam);
+					System.out.println("dateteSercvert");
 					send(success);
+					break;
+				case "SAVEPRODUCT":
+					lineParam2 = netIn.readLine();
+					lineParam3 = netIn.readLine();
+					Product p = new Product();
+					p.setID(lineParam);
+					p.setName(lineParam2);
+					p.setPrice(Double.parseDouble(lineParam3));
+					boolean success2 = dao.insertProduct(p);
+					send(success2);
+					break;
+				case "EDITPRICE":
+					lineParam2 = netIn.readLine();
+					boolean success3 = dao.updatePrice(lineParam, Double.parseDouble(lineParam2));
+					send(success3);
+					break;
+				case "EDITNAME":
+					lineParam2 = netIn.readLine();
+					boolean success4 = dao.updateName(lineParam, lineParam2);
+					send(success4);
 					break;
 				}
 			}
