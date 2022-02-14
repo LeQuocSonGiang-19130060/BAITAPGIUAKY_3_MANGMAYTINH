@@ -31,8 +31,10 @@ public class Client {
 		String line;
 		loop: while (true) {
 			line = netIn.readLine();
-			if (line.equalsIgnoreCase("QUIT"))
+			if (line.equalsIgnoreCase("QUIT")) {
+				send("quit");
 				break loop;
+			}
 			try {
 				requestAnal(line);
 				switch (command) {
@@ -41,6 +43,7 @@ public class Client {
 					receive();
 					break;
 				case "FINDBYPRICE":
+					send(command, doubleValue);
 					receiveList();
 					break;
 				case "FINDBYNAME":
@@ -70,12 +73,24 @@ public class Client {
 				continue;
 			}
 		}
+		System.out.println("Exit process!");
 	}
 
+	public void send(String command) {
+		netOut.println("aa");
+		netOut.println(command);
+	}
+	
 	public void send(String command, String param) throws IOException {
 		netOut.println("aa");
 		netOut.println(command);
 		netOut.println(param);
+	}
+	
+	public void send(String command, double price) throws IOException {
+		netOut.println("aa");
+		netOut.println(command);
+		netOut.println(price);
 	}
 
 	public void send(String command, String id, String name, double price) {
@@ -118,7 +133,7 @@ public class Client {
 					doubleValue = Double.parseDouble(param);
 					break;
 				} catch (NumberFormatException e) {
-					throw new MyException("Tham số giá tiền không hợp lệ");
+					throw new MyException("Invalid parameters price!");
 				}
 			case "SAVEPRODUCT":
 				try {
@@ -126,23 +141,23 @@ public class Client {
 					doubleValue = Double.parseDouble(stk.nextToken());
 					break;
 				} catch (NumberFormatException e) {
-					throw new MyException("Tham số không hợp lệ");
+					throw new MyException("Invalid parameters!");
 				}
 			case "EDITPRICE":
 				try {
 					doubleValue = Double.parseDouble(stk.nextToken());
 					break;
 				} catch (NumberFormatException e) {
-					throw new MyException("Tham số không hợp lệ");
+					throw new MyException("Invalid parameters!");
 				}
 			case "EDITNAME":
 				param2 = stk.nextToken();
 				break;
 			default:
-				throw new MyException("Lenh khong hop le");
+				throw new MyException("Invalid command!");
 			}
 		} catch (NoSuchElementException e) {
-			throw new MyException("Cú pháp không hợp lệ|");
+			throw new MyException("Invalid command!");
 		}
 	}
 

@@ -38,23 +38,17 @@ public class OneConnect extends Thread {
 			while (true) {
 				netIn.readLine();
 				lineCommand = netIn.readLine();
-				System.out.println("hello" + lineCommand);
 				if (lineCommand.equalsIgnoreCase("QUIT")) {
-
 					break;
 				}
 				lineParam = netIn.readLine();
-				System.out.println("he" + lineParam);
 				switch (lineCommand) {
 				case "FINDBYNAME":
 					ArrayList<Product> result = (ArrayList<Product>) dao.getByName(lineParam);
-					System.out.println(result);
 					send(result);
 					break;
 				case "FINDBYID":
-					System.out.println("id");
 					Product result1 = dao.getByID(lineParam);
-					System.out.println(result1);
 					send(result1);
 					break;
 				case "FINDBYPRICE":
@@ -63,7 +57,6 @@ public class OneConnect extends Thread {
 					break;
 				case "DELETEBYID":
 					boolean success = dao.deleteProduct(lineParam);
-					System.out.println("dateteSercvert");
 					send(success);
 					break;
 				case "SAVEPRODUCT":
